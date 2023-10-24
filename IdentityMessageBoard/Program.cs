@@ -2,6 +2,8 @@ using IdentityMessageBoard.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using IdentityMessageBoard.Models;
+using Serilog;
+using Serilog.Events;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,4 +36,15 @@ app.MapControllerRoute(
 
 app.MapRazorPages();
 
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Debug()
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(evt => evt.Level == LogEventLevel.Information)
+        .WriteTo.File("logfile_info.txt", rollingInterval: RollingInterval.Day))
+    .WriteTo.Logger(lc => lc
+        .Filter.ByIncludingOnly(evt => evt.Level == LogEventLevel.Warning)
+        .WriteTo.File("logfile_warning.txt", rollingInterval: RollingInterval.Day))
+    .WriteTo.Console()
+    .CreateLogger();
 app.Run();
+Log.CloseAndFlush();
