@@ -14,7 +14,18 @@ builder.Services.AddDbContext<MessageBoardContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("IdentityMessageBoardDb")).UseSnakeCaseNamingConvention());
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<MessageBoardContext>();
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("AuthenticatedUser", policy => policy.RequireAuthenticatedUser());
+//});
+
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+//});
 
 var app = builder.Build();
 
@@ -26,7 +37,8 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles();
 
 app.UseRouting();
-app.UseAuthentication();;
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAuthorization();
 
